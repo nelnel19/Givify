@@ -159,7 +159,7 @@ const Register = () => {
           </div>
 
           <div className="footer">
-            <p>It's better to give than to recieve. Always be greatful for what you have.</p>
+            <p>Always be greatful for what you have.</p>
           </div>
         </div>
         

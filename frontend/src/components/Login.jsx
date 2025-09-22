@@ -1,24 +1,60 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import GivifyImage from "../Assets/givify1.png";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
+  // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  // Handle login form submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Form submission logic would go here
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // ✅ Login successful
+        alert("Login successful!");
+
+        // Save token and user data to localStorage
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("lastLoggedInUser", JSON.stringify(data.user));
+
+        // Redirect to campaigns page
+        navigate("/campaigns");
+      } else {
+        // ❌ Backend returned an error
+        alert(data.error || "Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-container">
+        {/* Left side (form) */}
         <div className="login-content">
           <div className="login-header">
             <h1>Login</h1>
@@ -61,12 +97,6 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="login-options">
-              <a href="#forgot" className="forgot-password">
-                Forgot Password?
-              </a>
-            </div>
-
             <button type="submit" className="login-button">
               Login
             </button>
@@ -82,14 +112,15 @@ const Login = () => {
           </div>
 
           <div className="footer">
-            <p>It's better to give than to recieve. Always be greatful for what you have.</p>
+            <p>It's better to give than to receive.</p>
           </div>
         </div>
-        
+
+        {/* Right side (image) */}
         <div className="login-image">
-          <img 
-            src={GivifyImage} 
-            alt="Givify" 
+          <img
+            src={GivifyImage}
+            alt="Givify"
             className="login-image-content"
           />
         </div>
