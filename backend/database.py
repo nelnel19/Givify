@@ -10,3 +10,4 @@ db = client["givify_db"]
 # Create a collection for users
 users_collection = db["users"]
 campaigns_collection = db["campaigns"]  # Collection name
+donations_collection = db["donations"]

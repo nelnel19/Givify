@@ -40,7 +40,7 @@ const Login = () => {
         localStorage.setItem("lastLoggedInUser", JSON.stringify(data.user));
 
         // Redirect to campaigns page
-        navigate("/campaigns");
+        navigate("/homepage");
       } else {
         // ❌ Backend returned an error
         alert(data.error || "Invalid email or password");
