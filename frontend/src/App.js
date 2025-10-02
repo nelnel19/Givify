@@ -7,6 +7,8 @@ import Homepage from "./components/Homepage";
 import Donations from "./components/Donations"; 
 import History from "./components/History"; 
 import Users from "./components/Users"; // ✅ Import Users component
+import CampaignManagement from "./components/CampaignManagement"; 
+import DonationManagement from "./components/DonationManagement";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/donations" element={<Donations />} />
         <Route path="/history" element={<History />} />
         <Route path="/users" element={<Users />} /> {/* ✅ Added Users route */}
+        <Route path="/campaignmanagement" element={<CampaignManagement />} />
+        <Route path="/donationmanagement" element={<DonationManagement />} />
       </Routes>
     </Router>
   );

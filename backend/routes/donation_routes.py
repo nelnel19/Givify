@@ -3,52 +3,58 @@ from DonationModel import DonationModel
 
 donation_routes = Blueprint("donation_routes", __name__)
 
-@donation_routes.route("/donations", methods=["POST"])
-def create_donation():
+# ✅ Create a new donation
+@donation_routes.route("/donate", methods=["POST"])
+def donate():
+    data = request.json
     try:
-        data = request.json
-        
-        # Validate required fields
-        required_fields = [
-            "user_email", "user_name", "campaign_id", "campaign_name",
-            "payment_method", "card_number", "expiry_date", "cvv",
-            "donation_amount", "age_requirement_accepted", "privacy_policy_accepted"
-        ]
-        
-        for field in required_fields:
-            if not data.get(field):
-                return jsonify({"error": f"Missing required field: {field}"}), 400
-        
         # Create donation
         donation_id = DonationModel.create_donation(data)
         
-        # Update campaign's collected amount
+        # Update campaign collected amount
         DonationModel.update_campaign_collected_amount(
-            data["campaign_id"], 
-            data["donation_amount"]
+            data["campaign_id"], data["donation_amount"]
         )
         
-        return jsonify({
-            "message": "Donation created successfully", 
-            "id": donation_id
-        }), 201
-        
+        return jsonify({"message": "Donation successful", "donation_id": donation_id}), 201
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 400
 
-@donation_routes.route("/donations/user/<email>", methods=["GET"])
-def get_user_donations(email):
+
+# ✅ Get donations by user email
+@donation_routes.route("/donations/<email>", methods=["GET"])
+def get_donations_by_user(email):
     try:
         donations = DonationModel.get_donations_by_user(email)
         return jsonify(donations), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 400
 
-# ✅ NEW ROUTE - Fetch all donations
-@donation_routes.route("/donations/all", methods=["GET"])
+
+# ✅ Get all donations (Admin / Management)
+@donation_routes.route("/donations", methods=["GET"])
 def get_all_donations():
     try:
         donations = DonationModel.get_all_donations()
         return jsonify(donations), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 400
+
+
+# ✅ Update donation status
+@donation_routes.route("/donations/<donation_id>/status", methods=["PUT"])
+def update_status(donation_id):
+    data = request.json
+    new_status = data.get("status")
+
+    if not new_status:
+        return jsonify({"error": "Status is required"}), 400
+
+    try:
+        updated = DonationModel.update_status(donation_id, new_status)
+        if updated:
+            return jsonify({"message": "Status updated successfully"}), 200
+        else:
+            return jsonify({"error": "Failed to update status"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400

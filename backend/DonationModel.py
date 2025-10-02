@@ -52,12 +52,13 @@ class DonationModel:
                 "campaign_name": donation["campaign_name"],
                 "donation_amount": donation["donation_amount"],
                 "donation_date": donation["donation_date"],
-                "payment_method": donation["payment_method"]
+                "payment_method": donation["payment_method"],
+                "status": donation.get("status", "completed")
             }
             for donation in donations
         ]
 
-    # ✅ NEW METHOD: Get all donations
+    # ✅ Get all donations
     @staticmethod
     def get_all_donations():
         donations = donations_collection.find()
@@ -69,6 +70,16 @@ class DonationModel:
                 "donation_amount": donation["donation_amount"],
                 "donation_date": donation["donation_date"],
                 "payment_method": donation["payment_method"],
+                "status": donation.get("status", "completed")
             }
             for donation in donations
         ]
+    
+    # ✅ Update donation status
+    @staticmethod
+    def update_status(donation_id, new_status):
+        result = donations_collection.update_one(
+            {"_id": ObjectId(donation_id)},
+            {"$set": {"status": new_status}}
+        )
+        return result.modified_count > 0
