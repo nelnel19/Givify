@@ -6,6 +6,7 @@ import GivifyImage from "../Assets/givify1.png";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   // Handle input change
@@ -16,6 +17,7 @@ const Login = () => {
   // Handle login form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
@@ -48,6 +50,8 @@ const Login = () => {
     } catch (error) {
       console.error("Login error:", error);
       alert("An error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,12 +61,13 @@ const Login = () => {
         {/* Left side (form) */}
         <div className="login-content">
           <div className="login-header">
-            <h1>Login</h1>
+            <h1>Welcome Back</h1>
+            <p>Access your corporate philanthropy dashboard</p>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="input-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email Address</label>
               <input
                 type="email"
                 id="email"
@@ -71,6 +76,8 @@ const Login = () => {
                 onChange={handleChange}
                 required
                 className="form-input"
+                placeholder="executive@company.com"
+                disabled={isLoading}
               />
             </div>
 
@@ -85,34 +92,47 @@ const Login = () => {
                   onChange={handleChange}
                   required
                   className="form-input"
+                  placeholder="Enter your password"
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isLoading}
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
 
-            <button type="submit" className="login-button">
-              Login
+            <div className="login-options">
+              <Link to="/forgot-password" className="forgot-password">
+                Forgot Password?
+              </Link>
+            </div>
+
+            <button 
+              type="submit" 
+              className="login-button"
+              disabled={isLoading}
+            >
+              {isLoading ? "Authenticating..." : "Access Dashboard"}
             </button>
           </form>
 
           <div className="signup-section">
             <p>
-              Don't have an account?{" "}
+              New to Givify?{" "}
               <Link to="/register" className="signup-link">
-                Sign up
+                Create Enterprise Account
               </Link>
             </p>
           </div>
 
           <div className="footer">
-            <p>It's better to give than to receive.</p>
+            <p>Strategic philanthropy. Measurable impact.</p>
           </div>
         </div>
 
@@ -120,7 +140,7 @@ const Login = () => {
         <div className="login-image">
           <img
             src={GivifyImage}
-            alt="Givify"
+            alt="Givify Corporate Platform"
             className="login-image-content"
           />
         </div>

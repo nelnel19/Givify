@@ -11,7 +11,8 @@ class UserModel:
             "name": name,
             "email": email.lower(),
             "password": hashed_password,
-            "age": int(age)
+            "age": int(age),
+            "disabled": False
         }
         users_collection.insert_one(user)
         return user

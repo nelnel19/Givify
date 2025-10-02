@@ -5,7 +5,8 @@ import Login from "./components/Login";
 import Campaign from "./components/Campaign";
 import Homepage from "./components/Homepage";
 import Donations from "./components/Donations"; 
-import History from "./components/History"; // ✅ Import History component
+import History from "./components/History"; 
+import Users from "./components/Users"; // ✅ Import Users component
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
         <Route path="/homepage" element={<Homepage />} />
         <Route path="/campaigns" element={<Campaign />} />
         <Route path="/donations" element={<Donations />} />
-        <Route path="/history" element={<History />} /> {/* ✅ Added History route */}
+        <Route path="/history" element={<History />} />
+        <Route path="/users" element={<Users />} /> {/* ✅ Added Users route */}
       </Routes>
     </Router>
   );

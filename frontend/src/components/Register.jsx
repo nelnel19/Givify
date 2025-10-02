@@ -17,9 +17,14 @@ const Register = () => {
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear error message when user starts typing
+    if (message) {
+      setMessage("");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -29,6 +34,19 @@ const Register = () => {
       setMessage("Passwords do not match!");
       return;
     }
+
+    // Additional validation
+    if (formData.password.length < 6) {
+      setMessage("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (formData.age < 18) {
+      setMessage("You must be at least 18 years old to register");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       await API.post("/register", {
@@ -40,7 +58,9 @@ const Register = () => {
       alert("Registration successful! Please login.");
       navigate("/login");
     } catch (err) {
-      setMessage(err.response?.data?.error || "Registration failed");
+      setMessage(err.response?.data?.error || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +69,8 @@ const Register = () => {
       <div className="register-container">
         <div className="register-content">
           <div className="register-header">
-            <h1>Create Account</h1>
+            <h1>Create Enterprise Account</h1>
+            <p>Join the corporate philanthropy network for strategic social impact</p>
           </div>
 
           <form className="register-form" onSubmit={handleSubmit}>
@@ -59,25 +80,27 @@ const Register = () => {
                 type="text"
                 id="name"
                 name="name"
-                placeholder="Enter your full name"
+                placeholder="Executive Name"
                 value={formData.name}
                 onChange={handleChange}
                 required
                 className="form-input"
+                disabled={isLoading}
               />
             </div>
 
             <div className="input-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Corporate Email</label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder="executive@company.com"
                 value={formData.email}
                 onChange={handleChange}
                 required
                 className="form-input"
+                disabled={isLoading}
               />
             </div>
 
@@ -88,16 +111,20 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
-                  placeholder="Create a password"
+                  placeholder="Create secure password"
                   value={formData.password}
                   onChange={handleChange}
                   required
+                  minLength="6"
                   className="form-input"
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  disabled={isLoading}
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -115,12 +142,16 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
+                  minLength="6"
                   className="form-input"
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   className="password-toggle"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  disabled={isLoading}
                 >
                   {showConfirmPassword ? "Hide" : "Show"}
                 </button>
@@ -137,15 +168,25 @@ const Register = () => {
                 value={formData.age}
                 onChange={handleChange}
                 required
-                min="1"
+                min="18"
+                max="120"
                 className="form-input"
+                disabled={isLoading}
               />
             </div>
 
-            {message && <div className="register-message error">{message}</div>}
+            {message && (
+              <div className="register-message error" role="alert">
+                {message}
+              </div>
+            )}
 
-            <button type="submit" className="register-button">
-              Create Account
+            <button 
+              type="submit" 
+              className={`register-button ${isLoading ? 'loading' : ''}`}
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating Account..." : "Establish Partnership"}
             </button>
           </form>
 
@@ -153,20 +194,20 @@ const Register = () => {
             <p>
               Already have an account?{" "}
               <Link to="/login" className="signup-link">
-                Sign in
+                Access Dashboard
               </Link>
             </p>
           </div>
 
           <div className="footer">
-            <p>Always be greatful for what you have.</p>
+            <p>Building sustainable futures through strategic giving.</p>
           </div>
         </div>
         
         <div className="register-image">
           <img 
             src={GivifyImage} 
-            alt="Givify" 
+            alt="Givify Corporate Platform" 
             className="register-image-content"
           />
         </div>

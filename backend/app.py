@@ -6,7 +6,9 @@ from routes.campaign_routes import campaign_routes
 from routes.donation_routes import donation_routes
 
 app = Flask(__name__)
-CORS(app)
+
+# ✅ Allow only your frontend (localhost:3000) to access
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # JWT Secret Key
 app.config["JWT_SECRET_KEY"] = "supersecretkey"
