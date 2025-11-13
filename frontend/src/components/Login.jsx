@@ -20,7 +20,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/auth/login", {
+      const response = await fetch("https://givifybackend.onrender.com/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,8 +41,12 @@ const Login = () => {
         localStorage.setItem("token", data.access_token);
         localStorage.setItem("lastLoggedInUser", JSON.stringify(data.user));
 
-        // Redirect to campaigns page
-        navigate("/homepage");
+        // Redirect based on user role
+        if (data.user.role === "admin") {
+          navigate("/Users");
+        } else {
+          navigate("/homepage");
+        }
       } else {
         // ❌ Backend returned an error
         alert(data.error || "Invalid email or password");
